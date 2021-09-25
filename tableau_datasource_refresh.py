@@ -65,7 +65,7 @@ def main():
         for ds in TSC.Pager(server.datasources):
             logging.debug("{0} ({1})".format(ds.name, ds.project_name))
             if ds.name in args.datasource and ds.project_name == args.project:
-                logging.info("{0}: {1}".format(ds.name,ds.project_name, ds.id))
+                logging.info("{0}: {1}".format(ds.name, ds.project_name, ds.id))
                 try:
                     jobs[ds.id] = (ds, server.datasources.refresh(ds))
                 except ServerResponseError as e:
@@ -75,14 +75,23 @@ def main():
             n = 0
             while n < len(jobs):
                 time.sleep(args.f)
-                n = 0
-                for id in jobs.keys():
-                    job = server.jobs.get(jobs[id][1].id)
-                    logging.debug("checking job for datasource: {0}, finish code: {1}".format(jobs[id][0].name, job.finish_code))
-                    if job.finish_code == '1':
-                        raise RuntimeError("refresh job exited unexpectedly for datasourse {}".format(jobs[id][0].name))
-                    if job.finish_code == '0':
-                        n += 1
+                running_jobs = server.jobs
+                if running_jobs is None:
+                    logging.debug("no jobs returned, assuming all jobs are done")
+                    n = len(jobs)
+                else:
+                    n = 0
+                    for id in jobs.keys():
+                        logging.debug("checking job id: {0}".format(id))
+                        job = running_jobs.get(jobs[id][1].id)
+                        if job is None:
+                            n += 1  # assume job is done
+                        else:
+                            logging.debug("checking job for datasource: {0}, finish code: {1}".format(jobs[id][0].name, job.finish_code))
+                            if job.finish_code == '1':
+                                raise RuntimeError("refresh job exited unexpectedly for datasourse {}".format(jobs[id][0].name))
+                            if job.finish_code == '0':
+                                n += 1
             logging.debug("all jobs are finished")
             signal.alarm(0)
 
