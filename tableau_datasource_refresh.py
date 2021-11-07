@@ -88,9 +88,9 @@ def main():
                             n += 1  # assume job is done
                         else:
                             logging.debug("checking job for datasource: {0}, finish code: {1}".format(jobs[id][0].name, job.finish_code))
-                            if job.finish_code == '1':
+                            if str(job.finish_code) == '1':
                                 raise RuntimeError("refresh job exited unexpectedly for datasourse {}".format(jobs[id][0].name))
-                            if job.finish_code == '0':
+                            if str(job.finish_code) == '0':
                                 n += 1
             logging.debug("all jobs are finished")
             signal.alarm(0)
