@@ -3,7 +3,6 @@
 # The script only works with tableau 10.5 and later.
 ####
 
-import sys
 import signal
 import time
 import argparse
@@ -83,9 +82,13 @@ def main():
                     n = 0
                     for id in jobs.keys():
                         logging.debug("checking job id: {0}".format(id))
-                        job = running_jobs.get(jobs[id][1].id)
+                        # if an internal error occurs, just continue
+                        try:
+                            job = running_jobs.get_by_id(jobs[id][1].id)
+                        except TSC.server.endpoint.exceptions.InternalServerError as e:
+                            continue
                         if job is None:
-                            n += 1  # assume job is done
+                            n += 1   # assume job is done
                         else:
                             logging.debug("checking job for datasource: {0}, finish code: {1}".format(jobs[id][0].name, job.finish_code))
                             if str(job.finish_code) == '1':

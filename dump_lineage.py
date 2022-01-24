@@ -1,13 +1,3 @@
-####
-# This script demonstrates how to use the Tableau Server Client
-# to download a high resolution image of a view from Tableau Server.
-#
-# For more information, refer to the documentations on 'Query View Image'
-# (https://onlinehelp.tableau.com/current/api/rest_api/en-us/help.htm)
-#
-# To run the script, you must have installed Python 2.7.X or 3.3 and later.
-####
-
 import argparse
 import getpass
 import logging
@@ -26,12 +16,12 @@ def main():
     parser.add_argument('--project', required=True, default=None)
     parser.add_argument('--username', '-u', help='username to sign into server')
     parser.add_argument('-p', '--password', default=None)
-    parser.add_argument('--filepath', '-f', required=True, help='filepath to save the image(s) returned')
+    parser.add_argument('--filepath', '-f', required=True, help='filepath to save the workbooks returned')
 
     parser.add_argument('--logging-level', '-l', choices=['debug', 'info', 'error'], default='error',
                         help='desired logging level (set to error by default)')
 
-    parser.add_argument('workbook', help='one or more workbooks to process, "all" means all workbooks', nargs='+')
+    parser.add_argument('workbook', help='one or more workbooks to process, "all" means all workbooks (within a project)', nargs='+')
 
     args = parser.parse_args()
 
